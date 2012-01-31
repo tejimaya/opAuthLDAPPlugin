@@ -1,0 +1,6 @@
+enable_mobile:
+  Default: 1
+
+enable_pc:
+  Default: 1
+

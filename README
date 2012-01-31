@@ -1,0 +1,62 @@
+======== opAuthLDAPPlugin Ver. 1.0 ========
+
+【概要】
+外部の LDAP サーバに保存されているユーザ情報（エントリの情報）を用いて OpenPNE3 で認証することができます。
+
+【必要環境】
+* php-ldap モジュール
+** このモジュールがインストールされていない環境での動作は想定していません。
+
+yumの場合
+
+  $ yum install php-ldap
+
+aptの場合
+
+  $ apt-get install php5-ldap
+
+【準備】
+1. コアのZend Frameworkライブラリを最新版に書き換える。
+まずOpenPNE3ホームディレクトリに移動します。
+下記コマンドを実行します。
+
+  $ wget http://framework.zend.com/releases/ZendFramework-1.11.11/ZendFramework-1.11.11-minimal.zip
+  $ unzip ZendFramework-1.11.11-minimal.zip
+  $ rm -rf lib/vendor/Zend
+  $ cp -Rv ZendFramework-1.11.11-minimal/library/Zend lib/vendor/
+  $ ./symfony cc
+
+
+2. 管理画面（/pc_backend.php/opAuthLDAPPlugin）にアクセスして、LDAPサーバーの接続設定をする。
+(項目名の説明)
+・Ldap server 設定（server1のhost, basednが必須。複数指定可。）
+  ・Ldap host : LDAP サーバのホスト名を入力します。（必須）
+  ・Ldap port : LDAP サーバに接続するポート番号を入力します。（入力しない場合のデフォルト値は389）
+  ・Ldap basedn : LDAPサーバのBaseとなるDN(Distinguished Name)を指定します。（必須）
+・Ldap mail : エントリの中でメールアドレスが保存されている属性型を指定します。（メンバー作成時にOpenPNE3上で使うPCアドレスとして保存されます。）
+・Ldap rejectattrtype : ログイン停止を行うエントリの属性値をチェックする属性型を指定します。
+・Ldap rejectattr : 実際にログイン停止を行うため属性値を指定します。
+
+(設定例)
+server1 Ldap host: example.com
+server1 Ldap basedn: ou=People,dc=example,dc=com
+
+以上で設定完了です。
+
+【登録される情報】
+本プラグインのログインフォームを用いると OpenPNE 内にメンバとして存在していなくてもログインができます。
+その際、LDAP サーバーから下記の情報を取得し、 OpenPNE 内に格納してログイン処理が行われます。
+
+* メンバ名（ニックネーム）: ログイン時に用いるid
+* PCメールアドレス: 認証に用いたエントリに含まれる管理画面の「Ldap mail」で設定した属性値
+** 設定してない場合は保存されません
+** メールアドレスの形式かどうかをチェックしていないため、メールアドレス以外のものが保存される可能性があります。この場合、SNS からメールを送信する機能が正しく動作しない可能性があります。
+
+【その他設定】
+config/app.yml 内の auth_ldap_server_num を編集することで利用可能なLDAPサーバの台数を変更することができます．デフォルト値は3です．
+
+SSLを用いたLDAPサーバへの認証は対応していません。
+SSLを用いない場合はLDAPサーバから取得されるエントリや入力したパスワードなどが平文で送信されるため、 LDAPサーバとWebサーバ間の通信が傍受される可能性がない環境で用いてください。
+
+また、このプラグインから登録されたメンバはSNS内で使用されるパスワードを持ちません。そのため、PCメールアドレスの変更や退会、携帯識別番号の登録などのパスワードを用いる機能を利用することができません。
+

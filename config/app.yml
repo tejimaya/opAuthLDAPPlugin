@@ -1,0 +1,2 @@
+all:
+  auth_ldap_server_num: 3
