@@ -32,29 +32,34 @@ class opAuthLDAPPluginConfigForm extends sfForm
       $host = 'server'.$i.'_ldap_host';
       $port = 'server'.$i.'_ldap_port';
       $baseDn = 'server'.$i.'_ldap_basedn';
+      $accountDomainName = 'server'.$i.'_ldap_adn';
 
       $this->configs = array_merge($this->configs, array(
         $host          => 'opauthldapplugin_'.$host,
         $port          => 'opauthldapplugin_'.$port,
         $baseDn        => 'opauthldapplugin_'.$baseDn,
+        $accountDomainName => 'opauthldapplugin_'.$accountDomainName,
       ));
 
       $widgets = array_merge($widgets, array(
         $host         => new sfWidgetFormInput(),
         $port         => new sfWidgetFormInput(),
         $baseDn       => new sfWidgetFormInput(),
+        $accountDomainName       => new sfWidgetFormInput(),
       ));
 
       $validators = array_merge($validators, array(
          $host         => new sfValidatorString(array('required' => $i == 1)),
          $port         => new sfValidatorString(array('required' => false)),
          $baseDn       => new sfValidatorString(array('required' => $i == 1)),
+         $accountDomainName       => new sfValidatorString(array('required' => false)),
       ));
 
       $helps = array_merge($helps, array(
          $host         => 'LDAPサーバーのホスト名を入力します。',
          $port         => 'LDAPサーバーのポートを入力します。',
          $baseDn       => 'LDAPディレクトリツリーの最上位のDNを入力します。',
+         $accountDomainName       => 'ドメインを入力します。（ActiveDirectory を用いる必要です。OpenLDAPの場合は空にしてください。）',
       ));
     }
 

@@ -57,12 +57,18 @@ class opAuthValidatorLDAP extends sfValidatorSchema
     $serverNum = sfConfig::get('app_auth_ldap_server_num', 3);
     for ($i = 1; $i <= $serverNum; ++$i)
     {
-      $options[] = array(
+      $accountDomainName = opConfig::get('opauthldapplugin_server'.$i.'_ldap_adn', '');
+      $option = array(
         'host' => opConfig::get('opauthldapplugin_server'.$i.'_ldap_host', null),
         'port' => opConfig::get('opauthldapplugin_server'.$i.'_ldap_port', 0),
-        'bindRequiresDn' => true,
+        'bindRequiresDn' => '' === $accountDomainName,
         'baseDn' => opConfig::get('opauthldapplugin_server'.$i.'_ldap_basedn', null),
       );
+      if (!$option['bindRequiresDn'])
+      {
+        $option['accountDomainName'] = $accountDomainName;
+      }
+      $options[] = $option;
     }
     $adapter = new Zend_Auth_Adapter_Ldap($options, $username, $password);
     $result = $adapter->authenticate();
