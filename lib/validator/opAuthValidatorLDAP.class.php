@@ -63,6 +63,7 @@ class opAuthValidatorLDAP extends sfValidatorSchema
         'port' => opConfig::get('opauthldapplugin_server'.$i.'_ldap_port', 0),
         'bindRequiresDn' => '' === $accountDomainName,
         'baseDn' => opConfig::get('opauthldapplugin_server'.$i.'_ldap_basedn', null),
+        'useStartTls' => opConfig::get('opauthldapplugin_server'.$i.'_ldap_useSsl', false)
       );
       if (!$option['bindRequiresDn'])
       {

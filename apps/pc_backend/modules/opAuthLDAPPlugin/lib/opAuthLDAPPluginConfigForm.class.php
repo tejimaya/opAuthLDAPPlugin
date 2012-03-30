@@ -32,12 +32,14 @@ class opAuthLDAPPluginConfigForm extends sfForm
       $host = 'server'.$i.'_ldap_host';
       $port = 'server'.$i.'_ldap_port';
       $baseDn = 'server'.$i.'_ldap_basedn';
+      $useSsl = 'server'.$i.'_ldap_useSsl';
       $accountDomainName = 'server'.$i.'_ldap_adn';
 
       $this->configs = array_merge($this->configs, array(
         $host          => 'opauthldapplugin_'.$host,
         $port          => 'opauthldapplugin_'.$port,
         $baseDn        => 'opauthldapplugin_'.$baseDn,
+        $useSsl        => 'opauthldapplugin_'.$useSsl,
         $accountDomainName => 'opauthldapplugin_'.$accountDomainName,
       ));
 
@@ -45,6 +47,7 @@ class opAuthLDAPPluginConfigForm extends sfForm
         $host         => new sfWidgetFormInput(),
         $port         => new sfWidgetFormInput(),
         $baseDn       => new sfWidgetFormInput(),
+        $useSsl       => new sfWidgetFormInputCheckbox(array('default' => false)),
         $accountDomainName       => new sfWidgetFormInput(),
       ));
 
@@ -52,6 +55,7 @@ class opAuthLDAPPluginConfigForm extends sfForm
          $host         => new sfValidatorString(array('required' => $i == 1)),
          $port         => new sfValidatorString(array('required' => false)),
          $baseDn       => new sfValidatorString(array('required' => $i == 1)),
+         $useSsl       => new sfValidatorBoolean(array('required' => false)),
          $accountDomainName       => new sfValidatorString(array('required' => false)),
       ));
 
@@ -59,6 +63,7 @@ class opAuthLDAPPluginConfigForm extends sfForm
          $host         => 'LDAPサーバーのホスト名を入力します。',
          $port         => 'LDAPサーバーのポートを入力します。',
          $baseDn       => 'LDAPディレクトリツリーの最上位のDNを入力します。',
+         $useSsl       => 'LDAPサーバーとの通信を暗号化するかどうか。',
          $accountDomainName       => 'ドメインを入力します。（ActiveDirectory を用いる必要です。OpenLDAPの場合は空にしてください。）',
       ));
     }
@@ -102,7 +107,11 @@ class opAuthLDAPPluginConfigForm extends sfForm
       $config = Doctrine::getTable('SnsConfig')->retrieveByName($v);
       if($config)
       {
-        $this->getWidgetSchema()->setDefault($k,$config->getValue());
+        $this->getWidgetSchema()->setDefault($k, $config->getValue());
+        if (false !== strpos($k, 'useSsl'))
+        {
+          $this->getWidgetSchema()->setDefault($k, '1' == $config->getValue());
+        }
       }
     }
     $this->getWidgetSchema()->setNameFormat('ldap[%s]');
