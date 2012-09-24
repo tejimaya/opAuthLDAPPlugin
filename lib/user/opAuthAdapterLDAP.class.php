@@ -96,6 +96,15 @@ class opAuthAdapterLDAP extends opAuthAdapter
       }
 
       $result = $member->getId();
+
+      $defaultCommunities = Doctrine::getTable('Community')->getDefaultCommunities();
+      if ($defaultCommunities)
+      {
+        foreach ($defaultCommunities as $community)
+        {
+          Doctrine::getTable('CommunityMember')->join($result, $community->getId());
+        }
+      }
     }
 
     return $result;
