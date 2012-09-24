@@ -79,14 +79,14 @@ class opAuthAdapterLDAP extends opAuthAdapter
 
     if ($this->getAuthForm()->isValid() && !$result)
     {
-      $username = $this->getAuthForm()->getValue('id');
       $entry = $this->getAuthForm()->getValue('ldap_entry');
 
+      $uid = $entry['uid'][0];
       $member = new Member();
       $member->is_active = 1;
-      $member->name = $username;
+      $member->name = $uid;
       $member->save();
-      $member->setConfig('ldap', $username);
+      $member->setConfig('ldap', $uid);
 
       $emailAttr = opConfig::get('opauthldapplugin_ldap_mail', '');
       if ('' !== $emailAttr)

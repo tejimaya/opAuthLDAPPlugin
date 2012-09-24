@@ -50,7 +50,7 @@ class opAuthValidatorLDAP extends sfValidatorSchema
    */
   protected function doClean($values)
   {
-    $username = $values['id'];
+    $uid = $values['id'];
     $password = $values['password'];
 
     $options = array();
@@ -71,7 +71,7 @@ class opAuthValidatorLDAP extends sfValidatorSchema
       }
       $options[] = $option;
     }
-    $adapter = new Zend_Auth_Adapter_Ldap($options, $username, $password);
+    $adapter = new Zend_Auth_Adapter_Ldap($options, $uid, $password);
     $result = $adapter->authenticate();
 
     sfContext::getInstance()->getEventDispatcher()->notify(
@@ -97,7 +97,7 @@ class opAuthValidatorLDAP extends sfValidatorSchema
       }
     }
 
-    $memberConfig = Doctrine::getTable('MemberConfig')->retrieveByNameAndValue('ldap', $username);
+    $memberConfig = Doctrine::getTable('MemberConfig')->retrieveByNameAndValue('ldap', $entry['uid'][0]);
     if ($memberConfig)
     {
       $values['member'] = $memberConfig->getMember();
