@@ -73,6 +73,10 @@ class opAuthValidatorLDAP extends sfValidatorSchema
     }
     $adapter = new Zend_Auth_Adapter_Ldap($options, $username, $password);
     $result = $adapter->authenticate();
+
+    sfContext::getInstance()->getEventDispatcher()->notify(
+      new sfEvent($this, 'application.log', array(implode(' ', $result->getMessages()), 'priority' => sfLogger::INFO))
+    );
     if (!$result->isValid())
     {
       throw new sfValidatorError($this, 'invalid');
